@@ -361,10 +361,11 @@ Velocity (m/s) & 0 & 0 & 0 & 0 & 0 & 3 & 2\\
 \end{frame}
 
 \begin{frame}{Case study 2: our result with the paper's settings}
-\centering\includegraphics[width=0.84\linewidth]{paper_case2_path.png}
+% Crop the right-hand progress plot; retain the full two-panel PNG for analysis.
+\centering\includegraphics[height=125.3333bp,trim=0 0 249.6965bp 0,clip]{paper_case2_path.png}
 \begin{itemize}\small
   \item \textbf{Ours:} the vehicle passes the moving $O_6$ at \alert{$0.21$\,m, inside the safe distance $r_i=1.25$\,m} (no collision).
-  \item Its closest approach to the end of the path is $\approx10$\,m (at $t\approx85$\,s), outside our $4.9$\,m stop zone; the contour it follows then turns back along the path (right plot).
+  \item Its closest approach to the end of the path is $\approx10$\,m (at $t\approx85$\,s), outside our $4.9$\,m stop zone; the contour it follows then turns back along the path.
   \item So with exactly the parameters stated in the paper we did \alert{not} reproduce the paper's Fig.~11.
 \end{itemize}
 \end{frame}
@@ -376,7 +377,7 @@ Velocity (m/s) & 0 & 0 & 0 & 0 & 0 & 3 & 2\\
 \end{frame}
 
 \begin{frame}{Case study 3: high speed, $v_m=12$\,m/s}
-\centering\includegraphics[width=0.84\linewidth]{paper_case3_path.png}
+\centering\includegraphics[height=125.3333bp,trim=0 0 249.6965bp 0,clip]{paper_case3_path.png}
 \begin{itemize}\small
   \item \textbf{Paper:} same as Case 2 with $v_m=12$\,m/s. FPPA keeps the safe distance from all obstacles without re-tuning; the IAPF collides with $O_1$, $O_3$, $O_4$ (Fig.~17).
   \item \textbf{Ours:} the vehicle \alert{enters $O_2$ at $t=6.4$\,s} (up to $2.8$\,m inside it). Closest approach to the end: $\approx9$\,m at $t\approx36$\,s, then it turns back; on later passes it also enters $O_4$.
@@ -422,25 +423,6 @@ Planning approach & Optimization-based & Geometry-based\\
 \medskip
 \small As reported in the paper. We did not implement the IAPF, so this table is not checked by our runs.
 \end{frame}
-
-% \begin{frame}{Summary: paper vs.\ our re-implementation}
-% \begin{center}\footnotesize
-% \begin{tabular}{@{}lll@{}}
-% \toprule
-% Case & Paper reports & Our run (paper's settings: $\tanh$, $\alpha=0.99$)\\
-% \midrule
-% 1 (concave, $v_m=5$) & reaches target, $\approx78$\,s & reaches target in $78.3$\,s, $\ge2.27$\,m from the obstacle\\
-% 2 ($v_m=5$) & reaches target, safe & \alert{$0.21$\,m from $O_6$} ($<r_i$); gets within $\approx10$\,m of the end, turns back\\
-% 3 ($v_m=12$) & reaches target, safe & \alert{enters $O_2$} at $6.4$\,s; gets within $\approx9$\,m of the end, turns back\\
-% \bottomrule
-% \end{tabular}
-% \end{center}
-
-% \begin{itemize}\small
-%   \item Examples 1--3 and the update-rule behaviour (paper Figs.~1--5) are reproduced.
-%   \item Case 1 is reproduced. Cases 2 and 3 are not reproduced with the settings as written in the paper; the cause is not analysed in this deck.
-% \end{itemize}
-% \end{frame}
 
 % ===========================================================================
 \section{Conclusions}
