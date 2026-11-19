@@ -25,9 +25,10 @@ CASE2_KNOTS = np.array([[-5, 80], [20, 80], [45, 80], [62, 79.5], [71, 73], [75,
 # Table 1.  ASSUMED velocity directions (the paper gives speeds only): O6 crosses the
 # path downward, O7 drives along the lower straight in the travel direction.
 CASE2_OBJECTS = dict(
-    pos=np.array([[69.5, 76.5], [69, 82.5], [186, 53], [192, 56], [185, 48], [45, 112], [79.5, 10.2]]),
-    radius=np.array([2, 3, 2, 3, 3, 3, 3], float),
-    vel=np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, -3], [2, 0]], float),
+    # O7 starts 15 m from the plotted left edge (-15 m), allowing an encounter.
+    pos=np.array([[69.5, 76.5], [69, 82.5], [186, 53], [192, 56], [185, 48], [45, 112], [0, 10.2]]),
+    radius=np.array([2, 3, 3, 3, 3, 3, 3], float),
+    vel=np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, -3], [3, 0]], float),
 )
 
 
@@ -44,10 +45,43 @@ def sample_path(knots, spacing):
     return np.array(out)
 
 
-def case2(v_m=5.0, sat="tanh"):
+def case2(v_m=5.0, sat="tanh", *, near_crisp=False):
     w = sample_path(CASE2_KNOTS, 5.0)
+    # The comparison sharpens obstacles only; path and vehicle stay fuzzy.
     path = FuzzyPath(w, sigma=1.5, gamma=0.75)
     o = CASE2_OBJECTS
-    obs = FuzzyObstacles(o["pos"], lam=o["radius"], r=1.25, vel=o["vel"], delta=0.1, b=1.25)
+    obs = FuzzyObstacles(o["pos"], lam=o["radius"], r=1.25, vel=o["vel"], delta=0.1,
+                         b=20 if near_crisp else 1.25)
     prm = FPPAParams(alpha=0.99, d_o=1.25, v_m=v_m, d_v=0.5, eta_n=0.75, t_s=0.05)
     return FuzzyEnvironment(obs, path, p=1, sat=sat), prm, [np.array([i]) for i in range(7)]
+
+
+def triangle1(sat="tanh"):
+    """Straight reference path with three static discs arranged for a weave."""
+    w = np.c_[np.linspace(0, 120, 61), np.zeros(61)]
+    path = FuzzyPath(w, sigma=1.5, gamma=0.75)
+    obs = FuzzyObstacles([[50, -5], [60, 5], [70, -5]], lam=3, r=1.25, b=1.25)
+    return FuzzyEnvironment(obs, path, p=1, sat=sat), FPPAParams(), [np.array([i]) for i in range(3)]
+
+def triangle2(sat="tanh"):
+    """Straight reference path with three static discs arranged for a weave."""
+    w = np.c_[np.linspace(0, 120, 61), np.zeros(61)]
+    path = FuzzyPath(w, sigma=1.5, gamma=0.75)
+    obs = FuzzyObstacles([[50, -10], [60, 10], [70, -10]], lam=3, r=1.25, b=1.25)
+    return FuzzyEnvironment(obs, path, p=1, sat=sat), FPPAParams(), [np.array([i]) for i in range(3)]
+
+
+def case4(sat="tanh"):
+    """Straight path with a stationary physical obstacle centered on the goal."""
+    w = np.c_[np.linspace(0, 120, 61), np.zeros(61)]
+    path = FuzzyPath(w, sigma=1.5, gamma=0.75)
+    obs = FuzzyObstacles([[120, 0]], lam=3, r=1.25, b=1.25, delta=0.1)
+    return FuzzyEnvironment(obs, path, p=1, sat=sat), FPPAParams(), [np.array([0])]
+
+
+def case5(sat="tanh"):
+    """Equal nominal travel time: bot rightward and O1 downward meet at t=24 s."""
+    w = np.c_[np.linspace(0, 120, 61), np.zeros(61)]
+    path = FuzzyPath(w, sigma=1.5, gamma=0.75)
+    obs = FuzzyObstacles([[120, 120]], lam=3, r=1.25, b=1.25, vel=[[0, -5]], delta=0.1)
+    return FuzzyEnvironment(obs, path, p=1, sat=sat), FPPAParams(v_m=5), [np.array([0])]

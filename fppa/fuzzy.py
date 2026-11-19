@@ -23,17 +23,36 @@ def bell_bmf(chi, b):
         d mu / d chi = sech^2(u) * (-b) * s^(-b-1) * 2 chi
     """
     s = np.maximum(np.sum(chi * chi, axis=-1), _S_MIN)
-    u = s ** (-b)
+    # tanh is already exactly 1 at u=20 in float64. Cap there before
+    # exponentiating so steep memberships cannot produce 0 * inf gradients.
+    u = np.exp(np.minimum(-b * np.log(s), np.log(20.0)))
     mu = np.tanh(u)
     sech2 = 1.0 - mu * mu  # exactly 0 once tanh saturates, avoids 0*inf
-    coef = sech2 * (-b) * s ** (-b - 1.0) * 2.0
+    coef = -2.0 * b * sech2 * u / s
     return mu, coef[..., None] * chi
 
 
-def gauss_bmf(chi):
-    """Path BMF, eq. (8):  xi(chi) = exp(-chi^T chi / 2).  Returns (xi, grad_chi)."""
-    xi = np.exp(-0.5 * np.sum(chi * chi, axis=-1))
-    return xi, -xi[..., None] * chi
+def gauss_bmf(chi, sharpness=1.0):
+    """Path BMF exp(-s**k / 2), s=chi^T chi; k=1 is eq. (8).
+
+    k>1 gives a smooth near-crisp ellipse. Evaluate powers and derivatives in
+    log space; outside the representable tail both value and gradient are zero.
+    """
+    if not np.isfinite(sharpness) or sharpness < 1:
+        raise ValueError("path sharpness must be finite and >= 1")
+    s = np.sum(chi * chi, axis=-1)
+    if sharpness == 1:
+        xi = np.exp(-0.5 * s)
+        return xi, -xi[..., None] * chi
+    log_s = np.log(np.maximum(s, np.finfo(float).tiny))
+    log_u = sharpness * log_s
+    active = log_u < np.log(1500.0)
+    u = np.exp(np.minimum(log_u, np.log(1500.0)))
+    xi = np.where(active, np.exp(-0.5 * u), 0.0)
+    log_coef = np.log(sharpness) + (sharpness - 1) * log_s - 0.5 * u
+    coef = np.exp(np.minimum(log_coef, 700.0))
+    coef = np.where(active & (s > 0), coef, 0.0)
+    return xi, -coef[..., None] * chi
 
 
 # ---------------------------------------------------------------------------

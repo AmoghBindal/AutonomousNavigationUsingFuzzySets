@@ -1,9 +1,10 @@
-"""Case-study figures with exactly the paper's settings (Sec. 4).
+"""Case-study figures with the paper's controller settings (Sec. 4).
 
     python -m experiments.make_paper_figures      (from the project root)
 
 All unions use Yager p = 1 with the tanh(.) saturation, alpha = 0.99, and the other
-parameters listed in Sec. 4.  No baseline is plotted (the paper's IAPF of ref. [37]
+parameters listed in Sec. 4, with the current geometry/motion in scenarios.py.
+No baseline is plotted (the paper's IAPF of ref. [37]
 is not implemented).  Also redraws paper Fig. 1 (BMF).  Writes figures/paper_*.png and figures/results_paper.json.
 """
 import json
@@ -12,6 +13,7 @@ import os
 import numpy as np
 
 from experiments.make_figures import OUT, env_background, field, grid, save, signals_fig, summarize
+from experiments.animations import annotate_crashes, crash_counts
 from experiments.scenarios import case1, case2
 from experiments.style import AQUA, BLUE, INK, INK2, ORANGE, RED, VIOLET, plt
 from fppa import bell_bmf, min_clearance, run_fppa
@@ -78,7 +80,7 @@ def case23_figs():
         ax.plot(*first["x"].T, color=AQUA, lw=1.6, label="FPPA path (first pass)")
         for i, (c, r) in enumerate(zip(env.obs.c0, env.obs.lam)):
             ax.add_patch(plt.Circle(c, r, fill=False, color=RED, lw=1.2))
-            ax.annotate(f"$O_{i + 1}$", c + [r + 1, r], fontsize=8, color=INK)
+            ax.annotate(f"$O_{i + 1}$", c + [r + 1, r], fontsize=8, color=RED)
         moving = np.linalg.norm(env.obs.vel, axis=1) > 0
         for c, v in zip(env.obs.c0[moving], env.obs.vel[moving]):
             ax.annotate("", c + 6 * v, c, arrowprops=dict(arrowstyle="->", color=RED))
@@ -89,6 +91,7 @@ def case23_figs():
         ax.plot(*env.path.w[-1], "*", color=INK, ms=10)
         ax.legend(loc="lower right", fontsize=7.5)
         ax.set(xlabel="$x_1$ (m)", ylabel="$x_2$ (m)", title=f"{name}: $v_m={vm:g}$ m/s (obstacles at $t=0$)")
+        annotate_crashes(ax, first, env.obs, groups)
         ax = axs[1]
         ax.plot(log["t"], prog, color=BLUE)
         ax.plot(first["t"][-1], prog[k1], "o", color=INK, mfc="none", ms=7)
@@ -97,7 +100,8 @@ def case23_figs():
         ax.set(xlabel="$t$ (s)", ylabel="distance along path (m)", title="progress along the desired path (full run)")
         save(fig, f"paper_{tag}_path.png")
         signals_fig([("FPPA", first, BLUE)], f"paper_{tag}_signals.png",
-                    f"{name}: velocity, heading, acceleration, yaw rate (first pass)")
+                    f"{name}: velocity, heading, acceleration, yaw rate (first pass)",
+                    crashes=int(crash_counts(first, env.obs, groups)[-1]))
 
     fig, ax = plt.subplots(figsize=(5, 2.8))
     ax.hist(1e3 * cpu_log["cpu"], bins=60, color=BLUE)

@@ -1,0 +1,789 @@
+{
+  "notes": [
+    "Same FPPA update law for all runs; near-crisp uses finite smooth powers, not binary sets.",
+    "Case 2 fuzzy/near-crisp use identical geometry, timing, path, vehicle settings and softmin saturation.",
+    "Near-crisp changes only the obstacle bell exponent b from 1.25 to 20.",
+    "Speed is measured from consecutive positions; initial speed is unavailable.",
+    "Crashes count new physical contacts per object across all simulation samples; the banner persists after contact ends.",
+    "20 fps; every tenth 0.05 s sample (10x playback), or every fifth for destination cases (5x), plus final sample.",
+    "The two triangle variants use the saturation defaults in scenarios.py (currently tanh).",
+    "Destination cases use safe positional goal capture within 2 m and a 36 s maximum horizon; FPPA steering is unchanged."
+  ],
+  "case2": {
+    "parameters": {
+      "planner": {
+        "alpha": 0.99,
+        "d_o": 1.25,
+        "v_m": 5.0,
+        "d_v": 0.5,
+        "eta_n": 0.75,
+        "t_s": 0.05,
+        "sign": 1.0,
+        "eps": 1e-09
+      },
+      "obstacle_b": 1.25,
+      "path_sharpness": 1.0,
+      "goal_mode": "progress",
+      "goal_tolerance_m": 4.942133939361753,
+      "saturation": "softmin",
+      "obstacle_centers_t0": [
+        [
+          69.5,
+          76.5
+        ],
+        [
+          69.0,
+          82.5
+        ],
+        [
+          186.0,
+          53.0
+        ],
+        [
+          192.0,
+          56.0
+        ],
+        [
+          185.0,
+          48.0
+        ],
+        [
+          45.0,
+          112.0
+        ],
+        [
+          0.0,
+          10.2
+        ]
+      ],
+      "physical_radii_m": [
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ],
+      "safety_margins_m": [
+        1.25,
+        1.25,
+        1.25,
+        1.25,
+        1.25,
+        1.25,
+        1.25
+      ],
+      "obstacle_velocities_m_s": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -3.0
+        ],
+        [
+          3.0,
+          0.0
+        ]
+      ],
+      "velocity_inflation": 0.1,
+      "path_start": [
+        -5.0,
+        80.0
+      ],
+      "path_destination": [
+        270.0,
+        82.0
+      ],
+      "path_sigma": 1.5,
+      "path_gamma": 0.75
+    },
+    "completed": true,
+    "stop_reason": "goal_reached",
+    "goal_distance_m": 4.94988999931939,
+    "destination_occupied": false,
+    "final_time_s": 86.54999999999723,
+    "samples": 1732,
+    "final_position_m": [
+      266.9101074580463,
+      78.13296300967511
+    ],
+    "progress_m": 376.9569359046801,
+    "reference_path_length_m": 381.6839256293629,
+    "travelled_distance_m": 406.62352362474576,
+    "min_clearance_m": 2.095478108860168,
+    "min_clearance_per_object_m": {
+      "O1": 8.11957814527417,
+      "O2": 8.89199298968302,
+      "O3": 3.991437459728803,
+      "O4": 4.072687432616915,
+      "O5": 4.243130587521677,
+      "O6": 2.095478108860168,
+      "O7": 3.679366475628302
+    },
+    "first_collision_time_s": null,
+    "crash_count": 0,
+    "crash_events": [],
+    "speed_m_s": {
+      "min": 3.394045539814238,
+      "max": 5.76940622968944,
+      "mean": 4.69813429953505
+    },
+    "acceleration_m_s2": {
+      "abs_max": 3.9281267058585962,
+      "rms": 0.3095813661196428
+    },
+    "gif": "case2_animation.gif",
+    "playback": {
+      "fps": 20,
+      "sample_stride": 10,
+      "simulation_speed_factor": 10.0
+    },
+    "O7_encounter": {
+      "time_s": 44.949999999999584,
+      "physical_clearance_m": 3.679366475628302,
+      "bot_position_m": [
+        129.2547408643751,
+        13.847877700933426
+      ],
+      "obstacle_position_m": [
+        134.84999999999874,
+        10.2
+      ],
+      "obstacle_membership": 0.34794101459621724,
+      "bot_speed_m_s": 4.053318925304313,
+      "speed_without_O7_m_s": 4.989973447602173,
+      "displacement_from_run_without_O7_m": 3.9554958855881694
+    }
+  },
+  "case3_triangle_1": {
+    "parameters": {
+      "planner": {
+        "alpha": 0.99,
+        "d_o": 1.25,
+        "v_m": 5.0,
+        "d_v": 0.5,
+        "eta_n": 0.75,
+        "t_s": 0.05,
+        "sign": 1.0,
+        "eps": 1e-09
+      },
+      "obstacle_b": 1.25,
+      "path_sharpness": 1.0,
+      "goal_mode": "progress",
+      "goal_tolerance_m": 3.0,
+      "saturation": "tanh",
+      "obstacle_centers_t0": [
+        [
+          50.0,
+          -5.0
+        ],
+        [
+          60.0,
+          5.0
+        ],
+        [
+          70.0,
+          -5.0
+        ]
+      ],
+      "physical_radii_m": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "safety_margins_m": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "obstacle_velocities_m_s": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "velocity_inflation": 0.0,
+      "path_start": [
+        0.0,
+        0.0
+      ],
+      "path_destination": [
+        120.0,
+        0.0
+      ],
+      "path_sigma": 1.5,
+      "path_gamma": 0.75
+    },
+    "completed": true,
+    "stop_reason": "goal_reached",
+    "goal_distance_m": 2.95903254117707,
+    "destination_occupied": false,
+    "final_time_s": 28.000000000000263,
+    "samples": 561,
+    "final_position_m": [
+      117.11001447051838,
+      0.6354976153626891
+    ],
+    "progress_m": 117.11001447051838,
+    "reference_path_length_m": 120.0,
+    "travelled_distance_m": 126.2527409027829,
+    "min_clearance_m": 2.2786685203744543,
+    "min_clearance_per_object_m": {
+      "O1": 4.29898867210626,
+      "O2": 2.2786685203744543,
+      "O3": 4.919257102488566
+    },
+    "first_collision_time_s": null,
+    "crash_count": 0,
+    "crash_events": [],
+    "speed_m_s": {
+      "min": 3.3256433758315755,
+      "max": 5.074074737896915,
+      "mean": 4.509026460813634
+    },
+    "acceleration_m_s2": {
+      "abs_max": 0.9641428821461636,
+      "rms": 0.19959787895369177
+    },
+    "gif": "case3_triangle_1.gif",
+    "playback": {
+      "fps": 20,
+      "sample_stride": 10,
+      "simulation_speed_factor": 10.0
+    },
+    "passages": [
+      {
+        "object": "O1",
+        "bot_position_m": [
+          50.05966194055951,
+          2.476326532620822
+        ],
+        "side": "above"
+      },
+      {
+        "object": "O2",
+        "bot_position_m": [
+          59.94770889160017,
+          10.593082038612051
+        ],
+        "side": "above"
+      },
+      {
+        "object": "O3",
+        "bot_position_m": [
+          69.95175604257503,
+          3.032425313543176
+        ],
+        "side": "above"
+      }
+    ]
+  },
+  "case3_triangle_2": {
+    "parameters": {
+      "planner": {
+        "alpha": 0.99,
+        "d_o": 1.25,
+        "v_m": 5.0,
+        "d_v": 0.5,
+        "eta_n": 0.75,
+        "t_s": 0.05,
+        "sign": 1.0,
+        "eps": 1e-09
+      },
+      "obstacle_b": 1.25,
+      "path_sharpness": 1.0,
+      "goal_mode": "progress",
+      "goal_tolerance_m": 3.0,
+      "saturation": "tanh",
+      "obstacle_centers_t0": [
+        [
+          50.0,
+          -10.0
+        ],
+        [
+          60.0,
+          10.0
+        ],
+        [
+          70.0,
+          -10.0
+        ]
+      ],
+      "physical_radii_m": [
+        3.0,
+        3.0,
+        3.0
+      ],
+      "safety_margins_m": [
+        1.25,
+        1.25,
+        1.25
+      ],
+      "obstacle_velocities_m_s": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "velocity_inflation": 0.0,
+      "path_start": [
+        0.0,
+        0.0
+      ],
+      "path_destination": [
+        120.0,
+        0.0
+      ],
+      "path_sigma": 1.5,
+      "path_gamma": 0.75
+    },
+    "completed": true,
+    "stop_reason": "goal_reached",
+    "goal_distance_m": 2.8278958551493485,
+    "destination_occupied": false,
+    "final_time_s": 24.500000000000213,
+    "samples": 491,
+    "final_position_m": [
+      117.23473880483326,
+      0.5918830037058473
+    ],
+    "progress_m": 117.23473880483326,
+    "reference_path_length_m": 120.0,
+    "travelled_distance_m": 118.0351138440314,
+    "min_clearance_m": 4.846850991897782,
+    "min_clearance_per_object_m": {
+      "O1": 8.191279300261666,
+      "O2": 4.846850991897782,
+      "O3": 8.866357360946253
+    },
+    "first_collision_time_s": null,
+    "crash_count": 0,
+    "crash_events": [],
+    "speed_m_s": {
+      "min": 4.252950195257687,
+      "max": 5.074554880183913,
+      "mean": 4.817759748735933
+    },
+    "acceleration_m_s2": {
+      "abs_max": 0.2416097147372619,
+      "rms": 0.088252244453351
+    },
+    "gif": "case3_triangle_2.gif",
+    "playback": {
+      "fps": 20,
+      "sample_stride": 10,
+      "simulation_speed_factor": 10.0
+    },
+    "passages": [
+      {
+        "object": "O1",
+        "bot_position_m": [
+          50.098913183801905,
+          1.2158323194000915
+        ],
+        "side": "above"
+      },
+      {
+        "object": "O2",
+        "bot_position_m": [
+          60.04695650553319,
+          2.1328852859898633
+        ],
+        "side": "below"
+      },
+      {
+        "object": "O3",
+        "bot_position_m": [
+          69.95432324280723,
+          1.886516248589765
+        ],
+        "side": "above"
+      }
+    ]
+  },
+  "case2_near_crisp": {
+    "parameters": {
+      "planner": {
+        "alpha": 0.99,
+        "d_o": 1.25,
+        "v_m": 5.0,
+        "d_v": 0.5,
+        "eta_n": 0.75,
+        "t_s": 0.05,
+        "sign": 1.0,
+        "eps": 1e-09
+      },
+      "obstacle_b": 20,
+      "path_sharpness": 1.0,
+      "goal_mode": "progress",
+      "goal_tolerance_m": 4.942133939361753,
+      "saturation": "softmin",
+      "obstacle_centers_t0": [
+        [
+          69.5,
+          76.5
+        ],
+        [
+          69.0,
+          82.5
+        ],
+        [
+          186.0,
+          53.0
+        ],
+        [
+          192.0,
+          56.0
+        ],
+        [
+          185.0,
+          48.0
+        ],
+        [
+          45.0,
+          112.0
+        ],
+        [
+          0.0,
+          10.2
+        ]
+      ],
+      "physical_radii_m": [
+        2.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0,
+        3.0
+      ],
+      "safety_margins_m": [
+        1.25,
+        1.25,
+        1.25,
+        1.25,
+        1.25,
+        1.25,
+        1.25
+      ],
+      "obstacle_velocities_m_s": [
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          -3.0
+        ],
+        [
+          3.0,
+          0.0
+        ]
+      ],
+      "velocity_inflation": 0.1,
+      "path_start": [
+        -5.0,
+        80.0
+      ],
+      "path_destination": [
+        270.0,
+        82.0
+      ],
+      "path_sigma": 1.5,
+      "path_gamma": 0.75
+    },
+    "completed": true,
+    "stop_reason": "goal_reached",
+    "goal_distance_m": 5.000124898916884,
+    "destination_occupied": false,
+    "final_time_s": 94.69999999999676,
+    "samples": 1895,
+    "final_position_m": [
+      267.09527972036875,
+      77.93012910501236
+    ],
+    "progress_m": 376.83550240428985,
+    "reference_path_length_m": 381.6839256293629,
+    "travelled_distance_m": 405.7031146590624,
+    "min_clearance_m": -1.5825030423425201,
+    "min_clearance_per_object_m": {
+      "O1": 1.9682264636161375,
+      "O2": -1.5825030423425201,
+      "O3": 0.604107194087458,
+      "O4": 1.5087445648776008,
+      "O5": 1.496006919409651,
+      "O6": 0.1744405668802762,
+      "O7": 12.197549886354691
+    },
+    "first_collision_time_s": 21.55000000000017,
+    "crash_count": 1,
+    "crash_events": [
+      {
+        "time_s": 21.55000000000017,
+        "new_crashes": 1
+      }
+    ],
+    "speed_m_s": {
+      "min": 0.8325546111492774,
+      "max": 32.41663870782256,
+      "mean": 4.284087799990261
+    },
+    "acceleration_m_s2": {
+      "abs_max": 612.72024677972,
+      "rms": 24.81363521908097
+    },
+    "gif": "case2_near_crisp_animation.gif",
+    "playback": {
+      "fps": 20,
+      "sample_stride": 10,
+      "simulation_speed_factor": 10.0
+    }
+  },
+  "case4_stationary_destination": {
+    "parameters": {
+      "planner": {
+        "alpha": 0.99,
+        "d_o": 1.25,
+        "v_m": 5.0,
+        "d_v": 0.5,
+        "eta_n": 0.75,
+        "t_s": 0.05,
+        "sign": 1.0,
+        "eps": 1e-09
+      },
+      "obstacle_b": 1.25,
+      "path_sharpness": 1.0,
+      "goal_mode": "position",
+      "goal_tolerance_m": 2.0,
+      "saturation": "tanh",
+      "obstacle_centers_t0": [
+        [
+          120.0,
+          0.0
+        ]
+      ],
+      "physical_radii_m": [
+        3.0
+      ],
+      "safety_margins_m": [
+        1.25
+      ],
+      "obstacle_velocities_m_s": [
+        [
+          0.0,
+          0.0
+        ]
+      ],
+      "velocity_inflation": 0.1,
+      "path_start": [
+        0.0,
+        0.0
+      ],
+      "path_destination": [
+        120.0,
+        0.0
+      ],
+      "path_sigma": 1.5,
+      "path_gamma": 0.75
+    },
+    "completed": false,
+    "stop_reason": "destination_occupied",
+    "goal_distance_m": 27.347917339557746,
+    "destination_occupied": true,
+    "final_time_s": 35.950000000000095,
+    "samples": 720,
+    "final_position_m": [
+      92.6682937199072,
+      -0.9414959532674511
+    ],
+    "progress_m": 92.6682937199072,
+    "reference_path_length_m": 120.0,
+    "travelled_distance_m": 166.8715235913844,
+    "min_clearance_m": 1.5073755687439405,
+    "min_clearance_per_object_m": {
+      "O1": 1.5073755687439405
+    },
+    "first_collision_time_s": null,
+    "crash_count": 0,
+    "crash_events": [],
+    "speed_m_s": {
+      "min": 3.3254463544733146,
+      "max": 5.089845740165271,
+      "mean": 4.641766998369516
+    },
+    "acceleration_m_s2": {
+      "abs_max": 1.1697685869464103,
+      "rms": 0.229525664842451
+    },
+    "gif": "case4_stationary_destination.gif",
+    "playback": {
+      "fps": 20,
+      "sample_stride": 5,
+      "simulation_speed_factor": 5.0
+    },
+    "nominal_encounter": {
+      "bot_speed_m_s": 5.0,
+      "bot_distance_to_goal_m": 120.0,
+      "arrival_time_s": 24.0,
+      "obstacle_speed_m_s": 0.0,
+      "obstacle_distance_to_goal_m": 0.0,
+      "bot_position_at_arrival_m": [
+        120.0,
+        0.0
+      ],
+      "obstacle_position_at_arrival_m": [
+        120.0,
+        0.0
+      ]
+    }
+  },
+  "case5_crossing_destination": {
+    "parameters": {
+      "planner": {
+        "alpha": 0.99,
+        "d_o": 1.25,
+        "v_m": 5,
+        "d_v": 0.5,
+        "eta_n": 0.75,
+        "t_s": 0.05,
+        "sign": 1.0,
+        "eps": 1e-09
+      },
+      "obstacle_b": 1.25,
+      "path_sharpness": 1.0,
+      "goal_mode": "position",
+      "goal_tolerance_m": 2.0,
+      "saturation": "tanh",
+      "obstacle_centers_t0": [
+        [
+          120.0,
+          120.0
+        ]
+      ],
+      "physical_radii_m": [
+        3.0
+      ],
+      "safety_margins_m": [
+        1.25
+      ],
+      "obstacle_velocities_m_s": [
+        [
+          0.0,
+          -5.0
+        ]
+      ],
+      "velocity_inflation": 0.1,
+      "path_start": [
+        0.0,
+        0.0
+      ],
+      "path_destination": [
+        120.0,
+        0.0
+      ],
+      "path_sigma": 1.5,
+      "path_gamma": 0.75
+    },
+    "completed": true,
+    "stop_reason": "goal_reached",
+    "goal_distance_m": 1.9467785500138064,
+    "destination_occupied": false,
+    "final_time_s": 25.450000000000227,
+    "samples": 510,
+    "final_position_m": [
+      121.48912944848635,
+      1.2539697797174345
+    ],
+    "progress_m": 120.0,
+    "reference_path_length_m": 120.0,
+    "travelled_distance_m": 123.62339479060753,
+    "min_clearance_m": 0.5866580178329643,
+    "min_clearance_per_object_m": {
+      "O1": 0.5866580178329643
+    },
+    "first_collision_time_s": null,
+    "crash_count": 0,
+    "crash_events": [],
+    "speed_m_s": {
+      "min": 2.7777133806574557,
+      "max": 5.090325745440952,
+      "mean": 4.857500777626973
+    },
+    "acceleration_m_s2": {
+      "abs_max": 2.7996321605739327,
+      "rms": 0.5098978258900579
+    },
+    "gif": "case5_crossing_destination.gif",
+    "playback": {
+      "fps": 20,
+      "sample_stride": 5,
+      "simulation_speed_factor": 5.0
+    },
+    "nominal_encounter": {
+      "bot_speed_m_s": 5,
+      "bot_distance_to_goal_m": 120.0,
+      "arrival_time_s": 24.0,
+      "obstacle_speed_m_s": 5.0,
+      "obstacle_distance_to_goal_m": 120.0,
+      "bot_position_at_arrival_m": [
+        120.0,
+        0.0
+      ],
+      "obstacle_position_at_arrival_m": [
+        120.0,
+        0.0
+      ]
+    }
+  }
+}

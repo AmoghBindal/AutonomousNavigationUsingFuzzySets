@@ -11,6 +11,7 @@ import numpy as np
 
 from experiments.style import (AQUA, BLUE, GRID, INK, INK2, MEMB, ORANGE, RED, VIOLET, plt)
 from experiments.scenarios import case1, case2
+from experiments.animations import annotate_crashes
 from fppa import (APFParams, FPPAParams, FuzzyEnvironment, FuzzyObstacles, FuzzyPath,
                   bell_bmf, min_clearance, run_apf, run_fppa, unicycle_signals, yager)
 from fppa.fuzzy import make_sat_softmin, sat_tanh
@@ -246,7 +247,7 @@ def fig_core_level():
 # ---------------------------------------------------------------------------
 # Case studies
 # ---------------------------------------------------------------------------
-def signals_fig(runs, name, title, t_s=0.05):
+def signals_fig(runs, name, title, t_s=0.05, *, crashes=0):
     fig, axs = plt.subplots(2, 2, figsize=(10, 5.2), sharex=True)
     for (lab, log, c) in runs:
         v, psi, a, om = unicycle_signals(log["x"], t_s)
@@ -262,12 +263,22 @@ def signals_fig(runs, name, title, t_s=0.05):
     if len(runs) > 1:
         axs[0, 0].legend(fontsize=8)
     fig.suptitle(title, fontsize=10)
+    if crashes:
+        fig.subplots_adjust(top=0.81)
+        fig.text(0.98, 0.90, f"CRASHED · Crashes: {crashes}", ha="right", va="top",
+                 fontsize=9, fontweight="bold", color=RED)
     save(fig, name)
 
 
 def env_background(ax, env, xlim, ylim, t=0.0, n=500, cbar=True):
     X, Y, P = grid(xlim, ylim, n)
-    field(ax, X, Y, env.evaluate(P, t)["mu_E"], vmax=1, cbar=cbar)
+    # Keep large grids bounded in memory even for the 196-atom concave scene.
+    points = P.reshape(-1, 2)
+    values = np.empty(len(points))
+    for start in range(0, len(points), 4096):
+        batch = points[start:start + 4096]
+        values[start:start + len(batch)] = env.evaluate(batch, t)["mu_E"]
+    field(ax, X, Y, values.reshape(X.shape), vmax=1, cbar=cbar)
 
 
 def summarize(env, prm, log, groups):
@@ -278,7 +289,9 @@ def summarize(env, prm, log, groups):
                 completed=bool(s >= env.path.length - 1.5 * (env.path.length - env.path.cum[-2])),
                 min_clearance=[round(float(c), 2) for c in cl], v_min=float(v.min()), v_max=float(v.max()),
                 a_absmax=float(np.abs(a).max()), omega_absmax=float(np.abs(om).max()),
-                cpu_ms_median=float(1e3 * np.median(log["cpu"])), cpu_ms_p99=float(1e3 * np.percentile(log["cpu"], 99)))
+                cpu_ms_median=float(1e3 * np.median(log["cpu"])), cpu_ms_p99=float(1e3 * np.percentile(log["cpu"], 99)),
+                physical_radii_m=env.obs.lam.tolist(), obstacle_centers_t0=env.obs.c0.tolist(),
+                obstacle_velocities_m_s=env.obs.vel.tolist())
 
 
 def fig_case1():
@@ -336,12 +349,13 @@ def fig_case23():
         ax.plot(*log_f["x"].T, color=BLUE, lw=1.3, ls="--", label=r"FPPA ($\tanh$, $\alpha=0.90$)")
         for i, (c, r) in enumerate(zip(env.obs.c0, env.obs.lam)):
             ax.add_patch(plt.Circle(c, r, fill=False, color=RED, lw=1.2))
-            ax.annotate(f"$O_{i + 1}$", c + [r + 1, r], fontsize=8, color=INK)
+            ax.annotate(f"$O_{i + 1}$", c + [r + 1, r], fontsize=8, color=RED)
         moving = np.linalg.norm(env.obs.vel, axis=1) > 0
         for c, v in zip(env.obs.c0[moving], env.obs.vel[moving]):
             ax.annotate("", c + 6 * v, c, arrowprops=dict(arrowstyle="->", color=RED))
         ax.legend(loc="lower right", fontsize=7.5)
         ax.set(xlabel="$x_1$ (m)", ylabel="$x_2$ (m)", title=f"{'Case 2' if vm == 5 else 'Case 3'}: $v_m={vm:g}$ m/s (field at $t=0$)")
+        annotate_crashes(ax, log, env.obs, groups)
         ax = axs[1]
         cl = min_clearance(log["x"], log["t"], env.obs, groups)
         for i, c in enumerate((BLUE, ORANGE, AQUA, "#eda100", "#e87ba4", "#008300", VIOLET)):
@@ -368,6 +382,7 @@ def fig_case23():
             axs[0].legend(loc="lower right", fontsize=8)
             axs[0].set(title=r"case 3, $\tanh$, $\alpha=0.99>\sup\mu_E$: rides the ridge, collides, reverses",
                        xlabel="$x_1$ (m)", ylabel="$x_2$ (m)")
+            annotate_crashes(axs[0], log_t, env_t.obs, groups)
             prog = np.array([env_t.path.progress(x)[0] for x in log_t["x"]])
             prog_f = np.array([env_t.path.progress(x)[0] for x in log_f["x"]])
             prog2 = np.array([env_t.path.progress(x)[0] for x in prev_tanh[1]["x"]])
@@ -385,28 +400,6 @@ def fig_case23():
             ax.set(xlabel="planning time per step (ms)", ylabel="count",
                    title=f"FPPA step cost (Python/NumPy, {len(env.obs) + len(env.path.p)} atoms)")
             save(fig, "f15_cpu.png")
-            animate(env, log, groups)
-
-
-def animate(env, log, groups, name="case2_animation.gif", every=10):
-    from matplotlib.animation import FuncAnimation, PillowWriter
-    X, Y, P = grid((-15, 280), (-5, 120), 300)
-    fig, ax = plt.subplots(figsize=(8, 3.6))
-    frames = range(0, len(log["x"]), every)
-
-    def draw(k):
-        ax.clear()
-        t = log["t"][k]
-        field(ax, X, Y, env.evaluate(P, t)["mu_E"], cbar=False, vmax=1)
-        ax.plot(*log["x"][: k + 1].T, color=AQUA, lw=2)
-        ax.plot(*log["x"][k], "o", color=INK, ms=5)
-        ax.set_title(f"FPPA, case study 2, t = {t:4.1f} s", fontsize=9)
-        ax.set_xticks([]), ax.set_yticks([])
-
-    anim = FuncAnimation(fig, draw, frames=frames)
-    anim.save(os.path.join(OUT, name), writer=PillowWriter(fps=20))
-    plt.close(fig)
-    print("wrote", name)
 
 
 if __name__ == "__main__":

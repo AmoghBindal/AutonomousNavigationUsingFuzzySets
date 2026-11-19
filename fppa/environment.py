@@ -53,13 +53,19 @@ class FuzzyObstacles:
 class FuzzyPath:
     """Chain of Gaussian fuzzy waypoints, eqs. (8)-(10).
 
+    sharpness=1 preserves eq. (8); larger powers use exp(-s**sharpness/2)
+    for a smooth near-crisp path, with s the squared normalized distance.
+
     For each segment w_j -> w_{j+1}:  p_j = (w_j + w_{j+1})/2,
         Gamma_j = H_j diag(gamma |w_{j+1} - w_j|, sigma_j) H_j^T,  H_j = [h_j, h_j_perp].
     (The paper prints [h, h_perp]^T D [h, h_perp]; with h as *columns* the matrix with
     eigenvector h is H D H^T, consistent with eq. (3).)
     """
 
-    def __init__(self, waypoints, sigma=1.0, gamma=0.75):
+    def __init__(self, waypoints, sigma=1.0, gamma=0.75, sharpness=1.0):
+        if not np.isfinite(sharpness) or sharpness < 1:
+            raise ValueError("path sharpness must be finite and >= 1")
+        self.sharpness = sharpness
         self.w = np.asarray(waypoints, float)
         seg = np.diff(self.w, axis=0)
         L = np.linalg.norm(seg, axis=1)
@@ -81,7 +87,7 @@ class FuzzyPath:
     def atoms(self, X):
         """mu_Wj(x) = xi(Gamma_j^-1 (x - p_j))  (eq. 9).  grad_x = Gamma^-1 grad_chi (Gamma symmetric)."""
         chi = np.einsum("nij,...nj->...ni", self.Ginv, X[..., None, :] - self.p)
-        mu, g_chi = gauss_bmf(chi)
+        mu, g_chi = gauss_bmf(chi, self.sharpness)
         return mu, np.einsum("nij,...nj->...ni", self.Ginv, g_chi)
 
     def progress(self, x):

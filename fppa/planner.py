@@ -45,12 +45,35 @@ def fppa_step(env, x, t, prm):
     return normal + tangent, info
 
 
-def run_fppa(env, x0, prm, t_final=200.0, goal_tol=None):
+def goal_reached(env, x, t, goal_tol=None, goal_mode="progress"):
+    """Legacy progress capture, or safe physical arrival for destination tests."""
+    if goal_mode not in ("progress", "position"):
+        raise ValueError("goal_mode must be 'progress' or 'position'")
+    if goal_tol is None:
+        goal_tol = 1.5 * (env.path.length - env.path.cum[-2])
+    near = np.linalg.norm(x - env.path.w[-1]) < goal_tol
+    if goal_mode == "position":
+        if not near:
+            return False
+        if env.obs is None or len(env.obs) == 0:
+            return True
+        centers = env.obs.centers(t)
+        return bool(np.all(np.linalg.norm(x - centers, axis=1) > env.obs.lam)
+                    and np.all(np.linalg.norm(env.path.w[-1] - centers, axis=1) > env.obs.lam))
+    return bool(env.path.progress(x)[0] >= env.path.length - goal_tol or near)
+
+
+def run_fppa(env, x0, prm, t_final=200.0, goal_tol=None, *, goal_mode="progress"):
     """Simulate Algorithm 1 until the vehicle reaches the end of the path.
 
     The contours of mu_E are closed curves, so a contour follower that is not
     stopped wraps around the end of the path and drives back; we stop once the
-    projection on the crisp path is within goal_tol (default: 1.5 segments) of the end."""
+    projection on the crisp path is within goal_tol (default: 1.5 segments) of the end.
+    goal_mode='position' instead requires proximity to the actual goal and no
+    physical obstacle contact. This changes termination only, not the update law.
+    """
+    if goal_mode not in ("progress", "position"):
+        raise ValueError("goal_mode must be 'progress' or 'position'")
     x = np.asarray(x0, float).copy()
     L = env.path.length
     if goal_tol is None:
@@ -64,8 +87,7 @@ def run_fppa(env, x0, prm, t_final=200.0, goal_tol=None):
         log["x"].append(x.copy()); log["t"].append(t); log["cpu"].append(cpu)
         for k in ("mu_E", "mu_O", "mu_th", "v_max", "normal", "tangent"):
             log[k].append(np.copy(info[k]))
-        s, _ = env.path.progress(x)
-        if s >= L - goal_tol or np.linalg.norm(x - env.path.w[-1]) < goal_tol:
+        if goal_reached(env, x, t, goal_tol, goal_mode):
             break
         x = x + dx
         t += prm.t_s
