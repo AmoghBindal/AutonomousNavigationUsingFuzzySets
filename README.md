@@ -35,7 +35,7 @@ $$
 \mu_{W_j}(x)=\exp\!\big(-\tfrac12\|\Gamma_j^{-1}(x-p_j)\|^2\big)
 $$
 
-The environment is the Yager union of all atoms, $\mu_E=\operatorname{sat}\big(\sum_i\mu_{\tilde O_i}^p+\sum_j\mu_{W_j}^p\big)^{1/p}$.
+The environment is the Yager union of all atoms, $\mu_E=\mathrm{sat}\big((\sum_i\mu_{\tilde O_i}^p+\sum_j\mu_{W_j}^p)^{1/p}\big)$.
 The obstacle scale $\Lambda_i$ is inflated along each obstacle's velocity. At each step the planner picks a target
 contour and a speed limit from the local obstacle membership:
 
