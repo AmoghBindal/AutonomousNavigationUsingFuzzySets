@@ -1,4 +1,4 @@
-"""Model, trajectory and annotation checks: python3 -m experiments.test_animations."""
+"""Membership, simulation, crash-counter and renderer checks."""
 import unittest
 
 import numpy as np
@@ -131,7 +131,7 @@ class SimulationTests(unittest.TestCase):
         encounter = int(np.argmin(abs(log["t"] - 24)))
         self.assertGreater(np.linalg.norm(log["x"][encounter] - env.path.w[-1]), 3)
 
-    def test_legacy_progress_termination_is_unchanged(self):
+    def test_default_termination_is_progress_based(self):
         env, prm, _, log = self.runs["case2"]
         explicit = run_fppa(env, env.path.w[0], prm, t_final=200, goal_mode="progress")
         np.testing.assert_array_equal(log["x"], explicit["x"])

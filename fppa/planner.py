@@ -46,7 +46,7 @@ def fppa_step(env, x, t, prm):
 
 
 def goal_reached(env, x, t, goal_tol=None, goal_mode="progress"):
-    """Legacy progress capture, or safe physical arrival for destination tests."""
+    """Progress along the path (default), or safe physical arrival at the goal ('position')."""
     if goal_mode not in ("progress", "position"):
         raise ValueError("goal_mode must be 'progress' or 'position'")
     if goal_tol is None:

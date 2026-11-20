@@ -1,6 +1,6 @@
-"""Generate navigation GIFs: python3 -m experiments.make_animations.
+"""Navigation GIFs, matching static charts and figures/animation_results.json.
 
-Use --scenes case3_triangle_1 case3_triangle_2 to render just the triangle pair.
+    python3 -m experiments.make_animations [--scenes NAME ...] [--static-only]
 """
 import argparse
 import json
@@ -86,7 +86,6 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     output = OUT / "animation_results.json"
     results = json.loads(output.read_text()) if args.scenes and output.exists() else {}
-    results.pop("triangle", None)
     results["notes"] = [
         "Same FPPA update law for all runs; near-crisp uses finite smooth powers, not binary sets.",
         "Case 2 fuzzy/near-crisp use identical geometry, timing, path, vehicle settings and softmin saturation.",
@@ -94,7 +93,7 @@ def main():
         "Speed is measured from consecutive positions; initial speed is unavailable.",
         "Crashes count new physical contacts per object across all simulation samples; the banner persists after contact ends.",
         "20 fps; every tenth 0.05 s sample (10x playback), or every fifth for destination cases (5x), plus final sample.",
-        "The two triangle variants use the saturation defaults in scenarios.py (currently tanh).",
+        "The two triangle variants use the tanh saturation.",
         "Destination cases use safe positional goal capture within 2 m and a 36 s maximum horizon; FPPA steering is unchanged.",
     ]
     scenes = [

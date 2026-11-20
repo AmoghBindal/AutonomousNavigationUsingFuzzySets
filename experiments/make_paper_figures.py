@@ -15,11 +15,10 @@ import numpy as np
 from experiments.make_figures import OUT, env_background, field, grid, save, signals_fig, summarize
 from experiments.animations import annotate_crashes, crash_counts
 from experiments.scenarios import case1, case2
-from experiments.style import AQUA, BLUE, INK, INK2, ORANGE, RED, VIOLET, plt
+from experiments.style import AQUA, BLUE, INK, INK2, RED, plt
 from fppa import bell_bmf, min_clearance, run_fppa
 
 RESULTS = {}
-OBJ_COLORS = (BLUE, ORANGE, AQUA, "#eda100", "#e87ba4", "#008300", VIOLET)
 
 
 def bmf_fig():

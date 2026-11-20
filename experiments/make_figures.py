@@ -2,14 +2,14 @@
 
     python -m experiments.make_figures          (from the project root)
 
-All PNGs go to figures/, all numbers quoted in the slides go to figures/results.json.
+All PNGs go to figures/; the numbers behind them go to figures/results.json.
 """
 import json
 import os
 
 import numpy as np
 
-from experiments.style import (AQUA, BLUE, GRID, INK, INK2, MEMB, ORANGE, RED, VIOLET, plt)
+from experiments.style import (AQUA, BLUE, GRID, INK, INK2, MEMB, ORANGE, RED, SERIES, VIOLET, plt)
 from experiments.scenarios import case1, case2
 from experiments.animations import annotate_crashes
 from fppa import (APFParams, FPPAParams, FuzzyEnvironment, FuzzyObstacles, FuzzyPath,
@@ -321,7 +321,6 @@ def fig_case1():
     ax.set(xlabel="$x_1$ (m)", ylabel="$x_2$ (m)", title="Case study 1: concave obstacle (local-minimum trap for APF)")
     save(fig, "f10_case1_path.png")
     signals_fig([("FPPA", log, BLUE)], "f11_case1_signals.png", "Case study 1: unicycle signals of the FPPA path")
-    return log
 
 
 def fig_case23():
@@ -358,7 +357,7 @@ def fig_case23():
         annotate_crashes(ax, log, env.obs, groups)
         ax = axs[1]
         cl = min_clearance(log["x"], log["t"], env.obs, groups)
-        for i, c in enumerate((BLUE, ORANGE, AQUA, "#eda100", "#e87ba4", "#008300", VIOLET)):
+        for i, c in enumerate(SERIES):
             ax.plot(log["t"], cl[:, i], color=c, lw=1.3, label=f"$O_{i + 1}$")
         ax.axhline(1.25, color=INK2, ls="--", lw=1)
         ax.text(1, 1.6, "$r_i=1.25$ m", color=INK2, fontsize=8)

@@ -25,7 +25,7 @@ CASE2_KNOTS = np.array([[-5, 80], [20, 80], [45, 80], [62, 79.5], [71, 73], [75,
 # Table 1.  ASSUMED velocity directions (the paper gives speeds only): O6 crosses the
 # path downward, O7 drives along the lower straight in the travel direction.
 CASE2_OBJECTS = dict(
-    # O7 starts 15 m from the plotted left edge (-15 m), allowing an encounter.
+    # O7 starts at x = 0 and drives along the lower straight, where the vehicle meets it.
     pos=np.array([[69.5, 76.5], [69, 82.5], [186, 53], [192, 56], [185, 48], [45, 112], [0, 10.2]]),
     radius=np.array([2, 3, 3, 3, 3, 3, 3], float),
     vel=np.array([[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, -3], [3, 0]], float),
@@ -57,14 +57,15 @@ def case2(v_m=5.0, sat="tanh", *, near_crisp=False):
 
 
 def triangle1(sat="tanh"):
-    """Straight reference path with three static discs arranged for a weave."""
+    """Straight reference path with three static discs in a tight triangle (5 m off-axis)."""
     w = np.c_[np.linspace(0, 120, 61), np.zeros(61)]
     path = FuzzyPath(w, sigma=1.5, gamma=0.75)
     obs = FuzzyObstacles([[50, -5], [60, 5], [70, -5]], lam=3, r=1.25, b=1.25)
     return FuzzyEnvironment(obs, path, p=1, sat=sat), FPPAParams(), [np.array([i]) for i in range(3)]
 
+
 def triangle2(sat="tanh"):
-    """Straight reference path with three static discs arranged for a weave."""
+    """Straight reference path with three static discs in a wide triangle (10 m off-axis)."""
     w = np.c_[np.linspace(0, 120, 61), np.zeros(61)]
     path = FuzzyPath(w, sigma=1.5, gamma=0.75)
     obs = FuzzyObstacles([[50, -10], [60, 10], [70, -10]], lam=3, r=1.25, b=1.25)

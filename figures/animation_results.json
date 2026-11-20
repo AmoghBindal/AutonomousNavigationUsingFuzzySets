@@ -6,7 +6,7 @@
     "Speed is measured from consecutive positions; initial speed is unavailable.",
     "Crashes count new physical contacts per object across all simulation samples; the banner persists after contact ends.",
     "20 fps; every tenth 0.05 s sample (10x playback), or every fifth for destination cases (5x), plus final sample.",
-    "The two triangle variants use the saturation defaults in scenarios.py (currently tanh).",
+    "The two triangle variants use the tanh saturation.",
     "Destination cases use safe positional goal capture within 2 m and a 36 s maximum horizon; FPPA steering is unchanged."
   ],
   "case2": {
